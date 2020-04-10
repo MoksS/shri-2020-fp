@@ -15,65 +15,50 @@
  * Ответ будет приходить в поле {result}
  */
 import Api from '../tools/api';
-import { 
-    prop,
-    equals,
-    not,
-    and, 
-    length, 
-    values,
-    filter, 
-    gt,
-    or,
-    where,
-    partial,
-    pipe,
-    defaultTo,
-    test
-} from 'ramda';
+import { equals, and, length, gte, pipeP, test, tap } from 'ramda';
 
 const api = new Api();
 
-/**
- * Я – пример, удали меня
- */
-const wait = time => new Promise(resolve => {
-    setTimeout(resolve, time);
-})
+const less10 = str => gte(9, length(str));
+const more2 = str => gte(length(str), 3);
+const onlyNumber = str => test(/^[0-9]+\.?[0-9]+$/, str);
+const postvNum = str => gte(parseFloat(str), 0);
+const getNumber = async str => Math.round(parseFloat(str));
+const validator = async value => and(and(less10(value), more2(value)), and(onlyNumber(value), postvNum(value))) ?
+value :
+Promise.reject("invaled");
 
-const log = async log => console.log(await log);
+const getTransf = async value => api.get("https://api.tech/numbers/base", {
+    from: 10,
+    to: 2,
+    number: value,
+}).then ( ({result}) => result);
+const getAnimals = async id => api.get(`https://animals.tech/${id}`, {}).then(({result}) => result);
+const sqrNum = async num => Math.pow(num, 2);
+const balance = async num => num % 3;
 
-const less10 = (str) => gt(10, length(...str));
-const more2 = (str) =>  gt(length(...str), 2);
-const onlyNumber = (str) => test(/^[0-9]+$/, str) 
-// const strToNum = (str) 
+const processSequence = async ({ value, writeLog, handleSuccess, handleError }) => {
 
-// const validator = 
+    const log = async l => tap(writeLog, l);
 
-const processSequence = async ({value, writeLog, handleSuccess, handleError}) => {
-    
-    const f = pipe(
-        defaultTo(writeLog), 
+    const f = pipeP(
         log,
-
+        validator,
+        getNumber,
+        log,
+        getTransf,
+        log,
+        length,
+        log,
+        sqrNum,
+        log,
+        balance,
+        log,
+        getAnimals,
+        handleSuccess
     );
-    f(value);
 
-    api.get('https://api.tech/numbers/base', {from: 2, to: 10, number: '01011010101'}).then(({result}) => {
-        writeLog(result);
-    });
-
-    wait(2500).then(() => {
-        writeLog('SecondLog')
-
-        return wait(1500);
-    }).then(() => {
-        writeLog('ThirdLog');
-
-        return wait(400);
-    }).then(() => {
-        handleSuccess('Done');
-    });
+    f(value).catch(err => equals(err, "invaled") ? handleError("ValidationError") : handleError(err));
 }
 
 export default processSequence;
