@@ -15,6 +15,22 @@
  * Ответ будет приходить в поле {result}
  */
 import Api from '../tools/api';
+import { 
+    prop,
+    equals,
+    not,
+    and, 
+    length, 
+    values,
+    filter, 
+    gt,
+    or,
+    where,
+    partial,
+    pipe,
+    defaultTo,
+    test
+} from 'ramda';
 
 const api = new Api();
 
@@ -25,11 +41,23 @@ const wait = time => new Promise(resolve => {
     setTimeout(resolve, time);
 })
 
-const processSequence = ({value, writeLog, handleSuccess, handleError}) => {
-    /**
-     * Я – пример, удали меня
-     */
-    writeLog(value);
+const log = async log => console.log(await log);
+
+const less10 = (str) => gt(10, length(...str));
+const more2 = (str) =>  gt(length(...str), 2);
+const onlyNumber = (str) => test(/^[0-9]+$/, str) 
+// const strToNum = (str) 
+
+// const validator = 
+
+const processSequence = async ({value, writeLog, handleSuccess, handleError}) => {
+    
+    const f = pipe(
+        defaultTo(writeLog), 
+        log,
+
+    );
+    f(value);
 
     api.get('https://api.tech/numbers/base', {from: 2, to: 10, number: '01011010101'}).then(({result}) => {
         writeLog(result);

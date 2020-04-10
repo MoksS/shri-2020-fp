@@ -58,6 +58,7 @@ export const validateFieldN4 = where({
     circle: equals("blue")
 });;
 
+<<<<<<< HEAD
 // 5. Три фигуры одного любого цвета кроме белого.
 export const validateFieldN5 = (obj) => {
     // знаю ужасно, жду разбора
@@ -69,6 +70,10 @@ export const validateFieldN5 = (obj) => {
 
     return or(or(redFigure, orangeFigure), or(greenFigure, blueFigure));
 };
+=======
+// 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
+export const validateFieldN5 = () => false;
+>>>>>>> upstream/master
 
 // 6. Две зеленые фигуры (одна из них треугольник), еще одна любая красная.
 export const validateFieldN6 = (obj) => {
