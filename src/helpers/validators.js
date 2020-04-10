@@ -62,10 +62,10 @@ export const validateFieldN4 = where({
 export const validateFieldN5 = (obj) => {
     // знаю ужасно, жду разбора
     const lengthEl = partial(getLength, [obj]);
-    const redFigure = equals(lengthEl("red"), 3);
-    const orangeFigure = equals(lengthEl("orange"), 3);
-    const greenFigure = equals(lengthEl("green"), 3);
-    const blueFigure = equals(lengthEl("blue"), 3);
+    const redFigure = gte(lengthEl("red"), 3);
+    const orangeFigure = gte(lengthEl("orange"), 3);
+    const greenFigure = gte(lengthEl("green"), 3);
+    const blueFigure = gte(lengthEl("blue"), 3);
 
     return or(or(redFigure, orangeFigure), or(greenFigure, blueFigure));
 };
